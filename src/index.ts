@@ -1,4 +1,4 @@
-import * as CryptoJs from 'crypto-js';
+import * as CryptoJs from "crypto-js";
 
 class Block {
   public index: number;
@@ -7,15 +7,32 @@ class Block {
   public data: string;
   public timestamp: number;
 
-  static calculateBlockHash = (index: number, previousHash: string, timestamp: number, data: string): string => {
+  static calculateBlockHash = (
+    index: number,
+    previousHash: string,
+    timestamp: number,
+    data: string
+  ): string => {
     return CryptoJs.SHA256(index + previousHash + timestamp + data).toString();
-  }
+  };
 
   static validateStructure = (aBlock: Block): boolean => {
-    return typeof aBlock.index === 'number' && typeof aBlock.hash === 'string' && typeof aBlock.timestamp === 'number' && typeof aBlock.previousHash === 'string' && typeof aBlock.data === 'string'
-  }
+    return (
+      typeof aBlock.index === "number" &&
+      typeof aBlock.hash === "string" &&
+      typeof aBlock.timestamp === "number" &&
+      typeof aBlock.previousHash === "string" &&
+      typeof aBlock.data === "string"
+    );
+  };
 
-  constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number) {
+  constructor(
+    index: number,
+    hash: string,
+    previousHash: string,
+    data: string,
+    timestamp: number
+  ) {
     this.index = index;
     this.hash = hash;
     this.previousHash = previousHash;
@@ -24,27 +41,54 @@ class Block {
   }
 }
 
-const genesisBlock: Block = new Block(0, '2020202020220220', '', 'hello', 123456);
+const genesisBlock: Block = new Block(
+  0,
+  "2020202020220220",
+  "",
+  "hello",
+  123456
+);
 
 let blockChain: Block[] = [genesisBlock];
 
 const getBlockchain = (): Block[] => blockChain;
 const getLatestBlock = (): Block => blockChain[blockChain.length - 1];
 const getNewTimestamp = (): number => Math.round(new Date().getTime() / 1000);
-const getHashForblock = (aBlock: Block): string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.timestamp, aBLock.data);
+const getHashForblock = (aBlock: Block): string =>
+  Block.calculateBlockHash(
+    aBlock.index,
+    aBlock.previousHash,
+    aBlock.timestamp,
+    aBlock.data
+  );
 
 const createNewBlock = (data: string): Block => {
   const previousBlock: Block = getLatestBlock();
   const newIndex: number = previousBlock.index + 1;
   const nextTimestamp: number = getNewTimestamp();
-  const nextHash: string = Block.calculateBlockHash(newIndex, previousBlock.hash, nextTimestamp, data);
+  const nextHash: string = Block.calculateBlockHash(
+    newIndex,
+    previousBlock.hash,
+    nextTimestamp,
+    data
+  );
 
-  const newBlock: Block = new Block(newIndex, nextHash, previousBlock.hash, data, nextTimestamp);
+  const newBlock: Block = new Block(
+    newIndex,
+    nextHash,
+    previousBlock.hash,
+    data,
+    nextTimestamp
+  );
+  addBlock(newBlock);
   return newBlock;
-}
+};
 
 const isBlockValid = (candidateBlock: Block, previousBlock: Block): boolean => {
-  if (!Block.validateStructure(candidateBlock) || !Block.validateStructure(previousBlock)) {
+  if (
+    !Block.validateStructure(candidateBlock) ||
+    !Block.validateStructure(previousBlock)
+  ) {
     return false;
   } else if (previousBlock.index + 1 !== candidateBlock.index) {
     return false;
@@ -55,15 +99,18 @@ const isBlockValid = (candidateBlock: Block, previousBlock: Block): boolean => {
   }
 
   return true;
-}
+};
 
 const addBlock = (candidateBlock: Block): void => {
   if (isBlockValid(candidateBlock, getLatestBlock())) {
     blockChain.push(candidateBlock);
   }
-}
+};
 
-console.log(createNewBlock('hello'), createNewBlock('bye bye'));
+createNewBlock("second block");
+createNewBlock("third block");
+createNewBlock("fourth block");
 
+console.log(blockChain);
 
 export {};
