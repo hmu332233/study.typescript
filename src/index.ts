@@ -31,6 +31,7 @@ let blockChain: Block[] = [genesisBlock];
 const getBlockchain = (): Block[] => blockChain;
 const getLatestBlock = (): Block => blockChain[blockChain.length - 1];
 const getNewTimestamp = (): number => Math.round(new Date().getTime() / 1000);
+const getHashForblock = (aBlock: Block): string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.timestamp, aBLock.data);
 
 const createNewBlock = (data: string): Block => {
   const previousBlock: Block = getLatestBlock();
@@ -49,10 +50,20 @@ const isBlockValid = (candidateBlock: Block, previousBlock: Block): boolean => {
     return false;
   } else if (previousBlock.hash !== candidateBlock.previousHash) {
     return false;
+  } else if (getHashForblock(candidateBlock) !== candidateBlock.hash) {
+    return false;
   }
 
+  return true;
+}
+
+const addBlock = (candidateBlock: Block): void => {
+  if (isBlockValid(candidateBlock, getLatestBlock())) {
+    blockChain.push(candidateBlock);
+  }
 }
 
 console.log(createNewBlock('hello'), createNewBlock('bye bye'));
+
 
 export {};
