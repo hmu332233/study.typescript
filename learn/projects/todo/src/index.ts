@@ -1,10 +1,10 @@
-let todoItems: any;
-
 interface TodoItem {
   id: number;
   title: string;
   done: boolean;
 }
+
+let todoItems: Array<TodoItem>;
 
 // api
 function fetchTodoItems(): Array<TodoItem> {
